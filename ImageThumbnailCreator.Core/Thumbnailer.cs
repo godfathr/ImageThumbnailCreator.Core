@@ -1,4 +1,5 @@
-﻿using ImageThumbnailCreator.Core.Extensions;
+﻿using ImageThumbnailCreator.Core;
+using ImageThumbnailCreator.Core.Extensions;
 using ImageThumbnailCreator.Interfaces;
 using Microsoft.AspNetCore.Http;
 using System;
@@ -291,14 +292,7 @@ namespace ImageThumbnailCreator
                 else
                 {
                     var imageType = photo.ContentType;
-                    if (imageType == "image/jpeg"
-                        || imageType == "image/jpe"
-                        || imageType == "image/jpg"
-                        || imageType == "image/tif"
-                        || imageType == "image/tiff"
-                        || imageType == "image/png"
-                        || imageType == "image/bmp"
-                        || imageType == "image/png")
+                    if (ImageTypeEnum.ImageTypes.ContainsValue(imageType.ToString()))
                     {
                         string ticks = DateTime.Now.Ticks.ToString()
                         .Replace("/", "")
