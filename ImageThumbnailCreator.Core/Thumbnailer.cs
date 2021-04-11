@@ -1,4 +1,5 @@
-﻿using ImageThumbnailCreator.Interfaces;
+﻿using ImageThumbnailCreator.Core.Extensions;
+using ImageThumbnailCreator.Interfaces;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ImageThumbnailCreator
 {
@@ -275,7 +277,7 @@ namespace ImageThumbnailCreator
         /// <param name="imageFolder"></param>
         /// <param name="photo"></param>
         /// <returns></returns>
-        public string SaveOriginal(string imageFolder, IFormFile photo)
+        public async Task<string> SaveOriginal(string imageFolder, IFormFile photo)
         {
             try
             {
@@ -306,7 +308,7 @@ namespace ImageThumbnailCreator
 
                         var fileName = Path.GetFileName($"{ticks}_{photo.FileName}");
                         CheckAndCreateDirectory(imageFolder); //make sure the destination folder exists before attempting to save
-                        photo.SaveAs(Path.Combine(imageFolder, fileName));
+                        await photo.SaveAsAsync(Path.Combine(imageFolder, fileName));
                         response = Path.Combine(imageFolder, fileName);
                     }
                 }
