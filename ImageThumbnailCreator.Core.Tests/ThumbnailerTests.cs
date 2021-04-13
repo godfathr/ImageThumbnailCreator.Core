@@ -24,6 +24,17 @@ namespace ImageThumbnailCreator.Core.Tests
         [Fact]
         public void SaveOriginalSavesSuccessfully()
         {
+            //setup
+            string imageLocation = Path.Combine(_testImageFolder, @"TestImages\largeLandscape.jpg");
+
+            //act
+            _thumbnailer.Create(100, _thumbnailFolder, imageLocation);
+
+            string[] images = Directory.GetFiles(_thumbnailFolder);
+
+            //assert
+            Assert.True(images.Length == 1);
+            Assert.Single(images);
         }
     }
 
