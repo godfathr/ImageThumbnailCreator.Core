@@ -32,6 +32,50 @@ namespace ImageThumbnailCreator
         }
 
         /// <summary>
+        /// Save the original image to a specified file path. Must be called explicitly from the calling application
+        /// if it is desired to keep the original file in addition to the thumbnail.
+        /// </summary>
+        /// <param name="imageFolder"></param>
+        /// <param name="photo"></param>
+        /// <returns></returns>
+        public async Task<string> SaveOriginal(string imageFolder, IFormFile photo)
+        {
+            try
+            {
+                string response = "";
+
+                //check the file size is less than 8MB
+                if (photo.Length > (8388608)) //TODO: Make file size configurable
+                {
+                    response = "File size is too large. Must be less than 8MB.";
+                }
+                else
+                {
+                    var imageType = photo.ContentType;
+                    if (ImageTypeEnum.ImageTypes.ContainsValue(imageType.ToString()))
+                    {
+                        string ticks = DateTime.Now.Ticks.ToString()
+                        .Replace("/", "")
+                        .Replace(":", "")
+                        .Replace(".", "")
+                        .Replace(" ", "");
+
+                        var fileName = Path.GetFileName($"{ticks}_{photo.FileName}");
+                        CheckAndCreateDirectory(imageFolder); //make sure the destination folder exists before attempting to save
+                        await photo.SaveAsAsync(Path.Combine(imageFolder, fileName));
+                        response = Path.Combine(imageFolder, fileName);
+                    }
+                }
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        /// <summary>
         /// Create the thumbnail
         /// </summary>
         /// <param name="width"></param>
@@ -271,49 +315,7 @@ namespace ImageThumbnailCreator
             }
         }
 
-        /// <summary>
-        /// Save the original image to a specified file path. Must be called explicitly from the calling application
-        /// if it is desired to keep the original file in addition to the thumbnail.
-        /// </summary>
-        /// <param name="imageFolder"></param>
-        /// <param name="photo"></param>
-        /// <returns></returns>
-        public async Task<string> SaveOriginal(string imageFolder, IFormFile photo)
-        {
-            try
-            {
-                string response = "";
-
-                //check the file size is less than 8MB
-                if (photo.Length > (8388608)) //TODO: Make file size configurable
-                {
-                    response = "File size is too large. Must be less than 8MB.";
-                }
-                else
-                {
-                    var imageType = photo.ContentType;
-                    if (ImageTypeEnum.ImageTypes.ContainsValue(imageType.ToString()))
-                    {
-                        string ticks = DateTime.Now.Ticks.ToString()
-                        .Replace("/", "")
-                        .Replace(":", "")
-                        .Replace(".", "")
-                        .Replace(" ", "");
-
-                        var fileName = Path.GetFileName($"{ticks}_{photo.FileName}");
-                        CheckAndCreateDirectory(imageFolder); //make sure the destination folder exists before attempting to save
-                        await photo.SaveAsAsync(Path.Combine(imageFolder, fileName));
-                        response = Path.Combine(imageFolder, fileName);
-                    }
-                }
-
-                return response;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-        }
+        
 
         private static ImageCodecInfo GetEncoderInfo(String mimeType)
         {

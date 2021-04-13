@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.Drawing;
+using System.Threading.Tasks;
 
 namespace ImageThumbnailCreator.Interfaces
 {
@@ -7,7 +8,7 @@ namespace ImageThumbnailCreator.Interfaces
     {
         void CheckAndCreateDirectory(string imageFolderPath);
 
-        string SaveOriginal(string imageFolder, IFormFile photo); //the photo should be an IFormFile
+        Task<string> SaveOriginal(string imageFolder, IFormFile photo); //the photo should be an IFormFile
 
         string SaveThumbnail(Bitmap thumbnail, string imagePath, string thumbnailFileName, long compressionLevel);
     }
