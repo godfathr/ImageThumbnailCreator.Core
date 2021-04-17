@@ -8,7 +8,7 @@ namespace ImageThumbnailCreator.Interfaces
     {
         void CheckAndCreateDirectory(string imageFolderPath);
 
-        Task<string> SaveOriginal(string imageFolder, IFormFile photo); //the photo should be an IFormFile
+        Task<string> SaveOriginalAsync(string imageFolder, IFormFile photo); //the photo should be an IFormFile
 
         string SaveThumbnail(Bitmap thumbnail, string imagePath, string thumbnailFileName, long compressionLevel);
     }

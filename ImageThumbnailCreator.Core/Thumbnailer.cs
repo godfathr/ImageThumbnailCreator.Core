@@ -38,7 +38,7 @@ namespace ImageThumbnailCreator
         /// <param name="imageFolder"></param>
         /// <param name="photo"></param>
         /// <returns></returns>
-        public async Task<string> SaveOriginal(string imageFolder, IFormFile photo)
+        public async Task<string> SaveOriginalAsync(string imageFolder, IFormFile photo)
         {
             try
             {
