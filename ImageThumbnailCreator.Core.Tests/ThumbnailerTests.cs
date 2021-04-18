@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http.Internal;
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -71,12 +72,17 @@ namespace ImageThumbnailCreator.Core.Tests
                     byte[] b = new byte[fs.Length];
                     //UTF8Encoding temp = new UTF8Encoding(true);
 
-                    return new FormFile(fs, 0, b.Length, filePath, filePath);
+                    FormFile formFile = new FormFile(fs, 0, b.Length, filePath, filePath);
 
-                    //while (fs.Read(b, 0, b.Length) > 0)
-                    //{
-                    //    IFormFile file = new FormFile(stream, 0, byteArray.Length, "name", "fileName");
-                    //}
+                    //TODO: Use the file type from the actual file and see if we can pass it forward
+
+                    //string s = filePath.Split('\\').Last().ToString();
+                    //s = s.Split('.').Last();
+                    //string ss = ImageTypeEnum.ImageTypes.SingleOrDefault(x => x.Key.Contains(s, StringComparison.OrdinalIgnoreCase)).Value;
+
+                    formFile.ContentType = ss;
+
+                    return formFile;
                 }
             }
         }
@@ -107,6 +113,10 @@ namespace ImageThumbnailCreator.Core.Tests
                 if (Directory.Exists(_thumbnailFolder))
                 {
                     Directory.Delete(_thumbnailFolder);
+                }
+                if (!Directory.Exists(_originalFileSaveFolder))
+                {
+                    Directory.Delete(_originalFileSaveFolder);
                 }
             }
             catch (Exception)

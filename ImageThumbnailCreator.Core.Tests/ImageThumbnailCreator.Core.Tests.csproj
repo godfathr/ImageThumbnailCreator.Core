@@ -7,12 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="TestImages\largeLandscape.jpg" />
-    <None Remove="TestImages\largeLandscape.png" />
-    <None Remove="TestImages\largeLandscape.tif" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
     <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
@@ -35,7 +29,7 @@
     <None Include="TestImages\largeLandscape.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="TestImages\largeLandscape.png">
+    <!--<None Include="TestImages\largeLandscape.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="TestImages\largeLandscape.tif">
@@ -76,7 +70,7 @@
     </None>
     <None Update="TestImages\largeSquare.tif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </None>-->
   </ItemGroup>
 
 </Project>
