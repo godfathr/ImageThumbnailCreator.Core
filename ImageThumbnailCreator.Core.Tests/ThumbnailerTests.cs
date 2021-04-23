@@ -32,12 +32,13 @@ namespace ImageThumbnailCreator.Core.Tests
             Directory.Delete(_thumbnailFolder);
         }
 
-        [Fact]
-        public async Task SaveOriginalSavesSuccessfully()
+        [Theory]
+        [InlineData(@"largeLandscape.jpg")]
+        public async Task SaveOriginalSavesSuccessfully(string fileName)
         {
             //setup
             SetupTestDirectory();
-            string imageLocation = Path.Combine(_testImageFolder, @"largeLandscape.jpg");
+            string imageLocation = Path.Combine(_testImageFolder, fileName);
 
             IFormFile formFile = ConvertFileToStream(imageLocation);
 
@@ -57,7 +58,7 @@ namespace ImageThumbnailCreator.Core.Tests
             TearDownTestDirectory();
         }
 
-        private IFormFile ConvertFileToStream(string filePath)
+        private IFormFile ConvertFileToStream(string filePath, string fileType)
         {
             var path = Path.Combine(_testImageFolder, filePath);
             //IFormFile file = new FormFile();
@@ -67,12 +68,25 @@ namespace ImageThumbnailCreator.Core.Tests
             }
             else
             {
-                using (FileStream fs = File.OpenRead(path))
+                using (FileStream stream = File.OpenRead(path))
                 {
-                    byte[] b = new byte[fs.Length];
+
+                    var file = new FormFile(stream, 0, stream.Length, null, Path.GetFileName(@"./Images/Dart 1.jpg"))
+                    {
+                        Headers = new HeaderDictionary(),
+                        ContentType = "image/jpeg"
+                    };
+
+
+                    byte[] b = new byte[stream.Length];
                     //UTF8Encoding temp = new UTF8Encoding(true);
 
-                    FormFile formFile = new FormFile(fs, 0, b.Length, filePath, filePath);
+                    FormFile formFile = new FormFile(stream, 0, stream.Length, null, //filePath, 
+                        Path.GetFileName(@"./Images/Dart 1.jpg"))
+                        {
+                            Headers = new HeaderDictionary(),
+                            ContentType = fileType
+                        };
 
                     //TODO: Use the file type from the actual file and see if we can pass it forward
 
