@@ -40,7 +40,7 @@ namespace ImageThumbnailCreator.Core.Tests
             SetupTestDirectory();
             string imageLocation = Path.Combine(_testImageFolder, fileName);
 
-            IFormFile formFile = ConvertFileToStream(imageLocation);
+            IFormFile formFile = ConvertFileToStream(imageLocation, this.GetImageTypeEnum(fileName));
 
             //act
             string originalFileSaveLocation = await _thumbnailer.SaveOriginalAsync(_originalFileSaveFolder, formFile);
@@ -58,6 +58,16 @@ namespace ImageThumbnailCreator.Core.Tests
             TearDownTestDirectory();
         }
 
+        private string GetImageTypeEnum(string fileName)
+        {
+            string fileExtension = fileName.Split('.').Last();
+
+            return ImageTypeEnum.ImageTypes
+                .Where(x => string.Equals(x.Key, fileExtension, StringComparison.InvariantCultureIgnoreCase))
+                .SingleOrDefault()
+                .Value;
+        }
+
         private IFormFile ConvertFileToStream(string filePath, string fileType)
         {
             var path = Path.Combine(_testImageFolder, filePath);
@@ -71,18 +81,18 @@ namespace ImageThumbnailCreator.Core.Tests
                 using (FileStream stream = File.OpenRead(path))
                 {
 
-                    var file = new FormFile(stream, 0, stream.Length, null, Path.GetFileName(@"./Images/Dart 1.jpg"))
-                    {
-                        Headers = new HeaderDictionary(),
-                        ContentType = "image/jpeg"
-                    };
+                    //var file = new FormFile(stream, 0, stream.Length, null, Path.GetFileName(filePath))
+                    //{
+                    //    Headers = new HeaderDictionary(),
+                    //    ContentType = "image/jpeg"
+                    //};
 
 
                     byte[] b = new byte[stream.Length];
                     //UTF8Encoding temp = new UTF8Encoding(true);
 
                     FormFile formFile = new FormFile(stream, 0, stream.Length, null, //filePath, 
-                        Path.GetFileName(@"./Images/Dart 1.jpg"))
+                        Path.GetFileName(filePath))
                         {
                             Headers = new HeaderDictionary(),
                             ContentType = fileType
@@ -94,7 +104,7 @@ namespace ImageThumbnailCreator.Core.Tests
                     //s = s.Split('.').Last();
                     //string ss = ImageTypeEnum.ImageTypes.SingleOrDefault(x => x.Key.Contains(s, StringComparison.OrdinalIgnoreCase)).Value;
 
-                    formFile.ContentType = ss;
+                    //formFile.ContentType = ss;
 
                     return formFile;
                 }

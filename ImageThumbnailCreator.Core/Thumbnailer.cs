@@ -62,6 +62,8 @@ namespace ImageThumbnailCreator
 
                         var fileName = Path.GetFileName($"{ticks}_{photo.FileName}");
                         CheckAndCreateDirectory(imageFolder); //make sure the destination folder exists before attempting to save
+                        
+                        //TODO: Change this to write a stream to a file
                         await photo.SaveAsAsync(Path.Combine(imageFolder, fileName));
                         response = Path.Combine(imageFolder, fileName);
                     }
