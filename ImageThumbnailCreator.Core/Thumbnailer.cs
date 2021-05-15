@@ -62,9 +62,27 @@ namespace ImageThumbnailCreator
 
                         var fileName = Path.GetFileName($"{ticks}_{photo.FileName}");
                         CheckAndCreateDirectory(imageFolder); //make sure the destination folder exists before attempting to save
-                        
+
                         //TODO: Change this to write a stream to a file
-                        await photo.SaveAsAsync(Path.Combine(imageFolder, fileName));
+                        //await photo.SaveAsAsync(Path.Combine(imageFolder, fileName));
+
+                        if (photo.Length > 0)
+                        {
+                            string filePath = Path.Combine(imageFolder, fileName);
+                            using (Stream fileStream = new FileStream(filePath, FileMode.Create))
+                            {
+                                await photo.CopyToAsync(fileStream);
+                                fileStream.Dispose();
+                            }
+
+                            //var filePath = Path.GetTempFileName();
+
+                            //using (var stream = System.IO.File.Create(filePath))
+                            //{
+                            //    await formFile.CopyToAsync(stream);
+                            //}
+                        }
+
                         response = Path.Combine(imageFolder, fileName);
                     }
                 }
@@ -317,7 +335,7 @@ namespace ImageThumbnailCreator
             }
         }
 
-        
+
 
         private static ImageCodecInfo GetEncoderInfo(String mimeType)
         {

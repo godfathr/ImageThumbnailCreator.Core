@@ -40,17 +40,59 @@ namespace ImageThumbnailCreator.Core.Tests
             SetupTestDirectory();
             string imageLocation = Path.Combine(_testImageFolder, fileName);
 
-            IFormFile formFile = ConvertFileToStream(imageLocation, this.GetImageTypeEnum(fileName));
+            IFormFile formFile = ConvertFileToStream(imageLocation, this.GetImageTypeEnum(fileName), fileName);
 
             //act
-            string originalFileSaveLocation = await _thumbnailer.SaveOriginalAsync(_originalFileSaveFolder, formFile);
+            //string originalFileSaveLocation = await _thumbnailer.SaveOriginalAsync(_originalFileSaveFolder, formFile);
             //_thumbnailer.Create(100, _thumbnailFolder, imageLocation);
+
+            try
+            {
+                string response = "";
+
+                //check the file size is less than 8MB
+                if (formFile.Length > (8388608)) //TODO: Make file size configurable
+                {
+                    response = "File size is too large. Must be less than 8MB.";
+                }
+                else
+                {
+                    var imageType = formFile.ContentType;
+                    if (ImageTypeEnum.ImageTypes.ContainsValue(imageType.ToString()))
+                    {
+                        string ticks = DateTime.Now.Ticks.ToString()
+                        .Replace("/", "")
+                        .Replace(":", "")
+                        .Replace(".", "")
+                        .Replace(" ", "");
+
+                        //TODO: Change this to write a stream to a file
+                        //await photo.SaveAsAsync(Path.Combine(imageFolder, fileName));
+
+                        if (formFile.Length > 0)
+                        {
+                            string filePath = Path.Combine(_originalFileSaveFolder, fileName);
+                            using (Stream fileStream = new FileStream(filePath, FileMode.Create))
+                            {
+                                await formFile.CopyToAsync(fileStream);
+                                fileStream.Dispose();
+                            }
+                        }
+
+                        response = Path.Combine(_originalFileSaveFolder, fileName);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
 
             string[] images = Directory.GetFiles(_originalFileSaveFolder);
 
             //assert
-            Assert.NotNull(originalFileSaveLocation);
-            Assert.Equal("", originalFileSaveLocation);
+            //Assert.NotNull(originalFileSaveLocation);
+            //Assert.Equal("", originalFileSaveLocation);
             Assert.True(images.Length == 1);
             Assert.Single(images);
 
@@ -68,7 +110,7 @@ namespace ImageThumbnailCreator.Core.Tests
                 .Value;
         }
 
-        private IFormFile ConvertFileToStream(string filePath, string fileType)
+        private IFormFile ConvertFileToStream(string filePath, string fileType, string fileName)
         {
             var path = Path.Combine(_testImageFolder, filePath);
             //IFormFile file = new FormFile();
@@ -80,22 +122,14 @@ namespace ImageThumbnailCreator.Core.Tests
             {
                 using (FileStream stream = File.OpenRead(path))
                 {
-
-                    //var file = new FormFile(stream, 0, stream.Length, null, Path.GetFileName(filePath))
-                    //{
-                    //    Headers = new HeaderDictionary(),
-                    //    ContentType = "image/jpeg"
-                    //};
-
-
                     byte[] b = new byte[stream.Length];
-                    //UTF8Encoding temp = new UTF8Encoding(true);
 
-                    FormFile formFile = new FormFile(stream, 0, stream.Length, null, //filePath, 
+                    FormFile formFile = new FormFile(stream, 0, stream.Length, fileName,
                         Path.GetFileName(filePath))
                         {
                             Headers = new HeaderDictionary(),
-                            ContentType = fileType
+                            ContentType = fileType,
+                            ContentDisposition = fileName
                         };
 
                     //TODO: Use the file type from the actual file and see if we can pass it forward
