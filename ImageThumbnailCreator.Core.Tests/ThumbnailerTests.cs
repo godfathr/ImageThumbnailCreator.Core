@@ -43,61 +43,19 @@ namespace ImageThumbnailCreator.Core.Tests
             IFormFile formFile = ConvertFileToStream(imageLocation, this.GetImageTypeEnum(fileName), fileName);
 
             //act
-            //string originalFileSaveLocation = await _thumbnailer.SaveOriginalAsync(_originalFileSaveFolder, formFile);
+            string originalFileSaveLocation = await _thumbnailer.SaveOriginalAsync(_originalFileSaveFolder, formFile);
             //_thumbnailer.Create(100, _thumbnailFolder, imageLocation);
-
-            try
-            {
-                string response = "";
-
-                //check the file size is less than 8MB
-                if (formFile.Length > (8388608)) //TODO: Make file size configurable
-                {
-                    response = "File size is too large. Must be less than 8MB.";
-                }
-                else
-                {
-                    var imageType = formFile.ContentType;
-                    if (ImageTypeEnum.ImageTypes.ContainsValue(imageType.ToString()))
-                    {
-                        string ticks = DateTime.Now.Ticks.ToString()
-                        .Replace("/", "")
-                        .Replace(":", "")
-                        .Replace(".", "")
-                        .Replace(" ", "");
-
-                        //TODO: Change this to write a stream to a file
-                        //await photo.SaveAsAsync(Path.Combine(imageFolder, fileName));
-
-                        if (formFile.Length > 0)
-                        {
-                            string filePath = Path.Combine(_originalFileSaveFolder, fileName);
-                            using (Stream fileStream = new FileStream(filePath, FileMode.Create))
-                            {
-                                await formFile.CopyToAsync(fileStream);
-                                fileStream.Dispose();
-                            }
-                        }
-
-                        response = Path.Combine(_originalFileSaveFolder, fileName);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
 
             string[] images = Directory.GetFiles(_originalFileSaveFolder);
 
             //assert
-            //Assert.NotNull(originalFileSaveLocation);
-            //Assert.Equal("", originalFileSaveLocation);
+            Assert.NotNull(originalFileSaveLocation);
+            Assert.Contains(fileName, originalFileSaveLocation);
             Assert.True(images.Length == 1);
             Assert.Single(images);
 
             //tear down
-            TearDownTestDirectory();
+            TearDownTestDirectory(); //TODO: Make this part of the test fixture so it runs even if assertions fail
         }
 
         private string GetImageTypeEnum(string fileName)
@@ -120,28 +78,22 @@ namespace ImageThumbnailCreator.Core.Tests
             }
             else
             {
-                using (FileStream stream = File.OpenRead(path))
+                //It is important not to use a 'using' statement here. If we do, the
+                //base stream is closed and we are unable to use it as a parameter in other methods.
+                FileStream stream = File.Open(path, FileMode.OpenOrCreate);
+
+                byte[] b = new byte[stream.Length];
+
+                //Use the file type from the actual file and see if we can pass it forward
+                FormFile formFile = new FormFile(stream, 0, stream.Length, fileName,
+                    Path.GetFileName(filePath))
                 {
-                    byte[] b = new byte[stream.Length];
+                    Headers = new HeaderDictionary(),
+                    ContentType = fileType,
+                    ContentDisposition = fileName
+                };
 
-                    FormFile formFile = new FormFile(stream, 0, stream.Length, fileName,
-                        Path.GetFileName(filePath))
-                        {
-                            Headers = new HeaderDictionary(),
-                            ContentType = fileType,
-                            ContentDisposition = fileName
-                        };
-
-                    //TODO: Use the file type from the actual file and see if we can pass it forward
-
-                    //string s = filePath.Split('\\').Last().ToString();
-                    //s = s.Split('.').Last();
-                    //string ss = ImageTypeEnum.ImageTypes.SingleOrDefault(x => x.Key.Contains(s, StringComparison.OrdinalIgnoreCase)).Value;
-
-                    //formFile.ContentType = ss;
-
-                    return formFile;
-                }
+                return formFile;
             }
         }
 
@@ -172,9 +124,9 @@ namespace ImageThumbnailCreator.Core.Tests
                 {
                     Directory.Delete(_thumbnailFolder);
                 }
-                if (!Directory.Exists(_originalFileSaveFolder))
+                if (Directory.Exists(_originalFileSaveFolder))
                 {
-                    Directory.Delete(_originalFileSaveFolder);
+                    Directory.Delete(_originalFileSaveFolder, true);
                 }
             }
             catch (Exception)

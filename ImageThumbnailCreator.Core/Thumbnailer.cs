@@ -72,7 +72,7 @@ namespace ImageThumbnailCreator
                             using (Stream fileStream = new FileStream(filePath, FileMode.Create))
                             {
                                 await photo.CopyToAsync(fileStream);
-                                fileStream.Dispose();
+                                fileStream.Dispose(); // ensure stream is disposed
                             }
 
                             //var filePath = Path.GetTempFileName();
