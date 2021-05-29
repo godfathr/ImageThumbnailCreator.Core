@@ -16,7 +16,8 @@ namespace ImageThumbnailCreator.Core
             { "Tif", "image/tif" },
             { "Tiff", "image/tiff" },
             { "Png", "image/png" },
-            { "Bmp", "image/bmp" }
+            { "Bmp", "image/bmp" },
+            { "Gif", "image/gif" }
         };
     }
 }

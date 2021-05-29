@@ -8,7 +8,7 @@ using Xunit;
 
 namespace ImageThumbnailCreator.Core.Tests
 {
-    public class ThumbnailerTests : IClassFixture<DirectoryFixture>
+    public class ThumbnailerIntegrationTests : IClassFixture<DirectoryFixture>
     {
         private static string _testImageFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"TestImages");
         private static string _thumbnailFolder = Path.Combine(_testImageFolder, @"TestThumbnails");
@@ -16,7 +16,7 @@ namespace ImageThumbnailCreator.Core.Tests
         private Thumbnailer _thumbnailer = new Thumbnailer();
         private DirectoryFixture _fixture;
 
-        public ThumbnailerTests(DirectoryFixture fixture)
+        public ThumbnailerIntegrationTests(DirectoryFixture fixture)
         {
             this._fixture = fixture;
         }
@@ -34,6 +34,20 @@ namespace ImageThumbnailCreator.Core.Tests
 
         [Theory]
         [InlineData(@"largeLandscape.jpg")]
+        [InlineData(@"largePortrait.jpg")]
+        [InlineData(@"largeSquare.jpg")]
+        [InlineData(@"largeLandscape.tif")]
+        [InlineData(@"largePortrait.tif")]
+        [InlineData(@"largeSquare.tif")]
+        [InlineData(@"largeLandscape.bmp")]
+        [InlineData(@"largePortrait.bmp")]
+        [InlineData(@"largeSquare.bmp")]
+        [InlineData(@"largeLandscape.gif")]
+        [InlineData(@"largePortrait.gif")]
+        [InlineData(@"largeSquare.gif")]
+        [InlineData(@"largeLandscape.png")]
+        [InlineData(@"largePortrait.png")]
+        [InlineData(@"largeSquare.png")]
         public async Task SaveOriginalSavesSuccessfully(string fileName)
         {
             //setup
@@ -51,6 +65,45 @@ namespace ImageThumbnailCreator.Core.Tests
             //assert
             Assert.NotNull(originalFileSaveLocation);
             Assert.Contains(fileName, originalFileSaveLocation);
+            Assert.True(images.Length == 1);
+            Assert.Single(images);
+
+            //tear down
+            TearDownTestDirectory(); //TODO: Make this part of the test fixture so it runs even if assertions fail
+        }
+
+        [Theory]
+        [InlineData(@"largeLandscape.jpg", 50L)]
+        [InlineData(@"largePortrait.jpg", 50L)]
+        [InlineData(@"largeSquare.jpg", 50L)]
+        [InlineData(@"largeLandscape.tif", 50L)]
+        [InlineData(@"largePortrait.tif", 50L)]
+        [InlineData(@"largeSquare.tif", 50L)]
+        [InlineData(@"largeLandscape.bmp", 50L)]
+        [InlineData(@"largePortrait.bmp", 50L)]
+        [InlineData(@"largeSquare.bmp", 50L)]
+        [InlineData(@"largeLandscape.gif", 50L)]
+        [InlineData(@"largePortrait.gif", 50L)]
+        [InlineData(@"largeSquare.gif", 50L)]
+        [InlineData(@"largeLandscape.png", 50L)]
+        [InlineData(@"largePortrait.png", 50L)]
+        [InlineData(@"largeSquare.png", 50L)]
+        public async Task CreateThumbnailSavesSuccesfully(string fileName, long compressionLevel)
+        {
+            //setup
+            SetupTestDirectory();
+            string imageLocation = Path.Combine(_testImageFolder, fileName);
+
+            IFormFile formFile = ConvertFileToStream(imageLocation, this.GetImageTypeEnum(fileName), fileName);
+
+            //act
+            string thumbnailSaveLocation = await _thumbnailer.Create(100, _thumbnailFolder, _originalFileSaveFolder, formFile, compressionLevel);
+
+            string[] images = Directory.GetFiles(_originalFileSaveFolder);
+
+            //assert
+            Assert.NotNull(thumbnailSaveLocation);
+            Assert.Contains(fileName, thumbnailSaveLocation);
             Assert.True(images.Length == 1);
             Assert.Single(images);
 

@@ -9,6 +9,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ImageThumbnailCreator
@@ -16,49 +17,29 @@ namespace ImageThumbnailCreator
     public class Thumbnailer : IFileManager, IThumbnailer
     {
         /// <summary>
-        /// Create the directory for storing image files if it doesn't already exist.
-        /// </summary>
-        /// <param name="imageFolder"></param>
-        public void CheckAndCreateDirectory(string imageFolderPath)
-        {
-            try
-            {
-                Directory.CreateDirectory(imageFolderPath);
-            }
-            catch (Exception ex)
-            {
-                throw new IOException(ex.Message);
-            }
-        }
-
-        /// <summary>
         /// Save the original image to a specified file path. Must be called explicitly from the calling application
         /// if it is desired to keep the original file in addition to the thumbnail.
         /// </summary>
-        /// <param name="imageFolder"></param>
-        /// <param name="photo"></param>
+        /// <param name="imageFolder">Destination directory where the original file will be saved.</param>
+        /// <param name="photo">IFormFile for image sent from the HTTP request.</param>
         /// <returns></returns>
-        public async Task<string> SaveOriginalAsync(string imageFolder, IFormFile photo)
+        public async Task<string> SaveOriginalAsync(string imageFolder, IFormFile photo, CancellationToken cancellationToken = default)
         {
             try
             {
                 string response = "";
 
-                //check the file size is less than 8MB
-                if (photo.Length > (8388608)) //TODO: Make file size configurable
+                //check the file size is less than 16MB
+                if (photo.Length > 16_777_216) //TODO: Make file size configurable
                 {
-                    response = "File size is too large. Must be less than 8MB.";
+                    response = "File size is too large. Must be less than 16MB.";
                 }
                 else
                 {
                     var imageType = photo.ContentType;
                     if (ImageTypeEnum.ImageTypes.ContainsValue(imageType.ToString()))
                     {
-                        string ticks = DateTime.Now.Ticks.ToString()
-                        .Replace("/", "")
-                        .Replace(":", "")
-                        .Replace(".", "")
-                        .Replace(" ", "");
+                        string ticks = DateTime.Now.Ticks.ToString();
 
                         var fileName = Path.GetFileName($"{ticks}_{photo.FileName}");
                         CheckAndCreateDirectory(imageFolder); //make sure the destination folder exists before attempting to save
@@ -96,20 +77,33 @@ namespace ImageThumbnailCreator
         }
 
         /// <summary>
-        /// Create the thumbnail
+        /// Save the original uploaded file to the file
         /// </summary>
-        /// <param name="width"></param>
-        /// <param name="imageFolder"></param>
-        /// <param name="fullImagePath"></param>
+        /// <param name="width">Desired width in pixels.</param>
+        /// <param name="thumbnailImageFolder">Destination directory where the thumbnail will be saved.</param>
+        /// <param name="originalFileFolder">Destination directory where the original file will be saved.</param>
+        /// <param name="photo">IFormFile for image sent from the HTTP request.</param>
+        /// <param name="compressionLevel">
+        /// A 64-bit integer that specifies the value stored in the System.Drawing.Imaging.EncoderParameter
+        /// object. Must be nonnegative. This parameter is converted to a 32-bit integer
+        /// before it is stored in the System.Drawing.Imaging.EncoderParameter object.</param>
         /// <returns></returns>
-        public string Create(float width, string imageFolder, string fullImagePath, long compressionLevel = 85L)
+        public async Task<string> Create(float width, string thumbnailImageFolder, string originalFileFolder, IFormFile photo, long compressionLevel = 85L)
         {
             if (width < 1) throw new ArgumentException($"The width parameter must be greater than 0.");
-            if (string.IsNullOrEmpty(imageFolder)) throw new ArgumentNullException(nameof(imageFolder));
-            if (string.IsNullOrEmpty(fullImagePath)) throw new ArgumentNullException(nameof(fullImagePath));
-            if (!string.IsNullOrEmpty(imageFolder))
+            if (string.IsNullOrEmpty(thumbnailImageFolder)) throw new ArgumentNullException(nameof(thumbnailImageFolder));
+            if (string.IsNullOrEmpty(originalFileFolder)) throw new ArgumentNullException(nameof(originalFileFolder));
+            if (photo == null) throw new ArgumentNullException(nameof(photo));
+            if (!string.IsNullOrEmpty(thumbnailImageFolder))
             {
-                CheckAndCreateDirectory(imageFolder); //make sure the directory exists
+                CheckAndCreateDirectory(thumbnailImageFolder); //make sure the directory exists
+            }
+
+            //First, save the original file then validate that we get a file location
+            string originalFileLocation = await SaveOriginalAsync(thumbnailImageFolder, photo);
+            if (string.IsNullOrEmpty(originalFileLocation))
+            {
+                throw new Exception("Original file location is invalid or the original file failed to save.");
             }
 
             Bitmap thumbnail;
@@ -117,7 +111,7 @@ namespace ImageThumbnailCreator
             try
             {
                 //read the bytes
-                Bitmap srcImage = new Bitmap(fullImagePath);
+                Bitmap srcImage = new Bitmap(originalFileLocation);
 
                 float imageWidth = srcImage.Width;
                 float imageHeight = srcImage.Height;
@@ -137,7 +131,7 @@ namespace ImageThumbnailCreator
 
                 Tuple<float, float> dimensions = SetDimensions(width, ref imageWidth, ref imageHeight);
 
-                string thumbnailFileName = fullImagePath.Split('\\').Last().ToString();
+                string thumbnailFileName = originalFileLocation.Split('\\').Last().ToString();
                 var newWidth = (int)dimensions.Item2;
                 var newHeight = (int)dimensions.Item1;
                 thumbnail = new Bitmap(newWidth, newHeight);
@@ -150,7 +144,7 @@ namespace ImageThumbnailCreator
                 graphics.RotateTransform(0);
                 //graphics.CompositingQuality = CompositingQuality.HighSpeed;
 
-                // Now calculate the X,Y position of the upper-left corner 
+                // Now calculate the X,Y position of the upper-left corner
                 // (one of these will always be zero)
                 int posX = Convert.ToInt32((imageWidth - (newWidth)) / 2);
                 int posY = Convert.ToInt32((imageHeight - (newHeight)) / 2);
@@ -165,7 +159,7 @@ namespace ImageThumbnailCreator
                 using (thumbnail)
                 {
                     //Save the thumbnail to the file system.
-                    thumbPath = SaveThumbnail(thumbnail, imageFolder, thumbnailFileName, compressionLevel);
+                    thumbPath = SaveThumbnail(thumbnail, thumbnailImageFolder, thumbnailFileName, compressionLevel);
                 }
 
                 //clean up
@@ -182,7 +176,7 @@ namespace ImageThumbnailCreator
         }
 
         /// <summary>
-        /// Calculates the dimensions of the thumbnail and returns them in a tuple with 
+        /// Calculates the dimensions of the thumbnail and returns them in a tuple with
         /// height as the first item and width as the second item.
         /// </summary>
         /// <param name="width"></param>
@@ -335,8 +329,6 @@ namespace ImageThumbnailCreator
             }
         }
 
-
-
         private static ImageCodecInfo GetEncoderInfo(String mimeType)
         {
             int j;
@@ -348,6 +340,22 @@ namespace ImageThumbnailCreator
                     return encoders[j];
             }
             return null;
+        }
+
+        /// <summary>
+        /// Create the directory for storing image files if it doesn't already exist.
+        /// </summary>
+        /// <param name="imageFolder"></param>
+        public void CheckAndCreateDirectory(string imageFolderPath)
+        {
+            try
+            {
+                Directory.CreateDirectory(imageFolderPath);
+            }
+            catch (Exception ex)
+            {
+                throw new IOException(ex.Message);
+            }
         }
     }
 }

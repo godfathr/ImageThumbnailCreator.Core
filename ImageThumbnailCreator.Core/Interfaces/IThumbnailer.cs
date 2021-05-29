@@ -1,12 +1,14 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Threading.Tasks;
 
 namespace ImageThumbnailCreator.Interfaces
 {
     public interface IThumbnailer
     {
-        string Create(float width, string imageFolder, string fullImagePath, long compressionLevel);
+        Task<string> Create(float width, string thumbnailImageFolder, string originalFileFolder, IFormFile photo, long compressionLevel);
 
         RotateFlipType OrientUpright(List<int> propertyIdList, Image srcImage);
 
