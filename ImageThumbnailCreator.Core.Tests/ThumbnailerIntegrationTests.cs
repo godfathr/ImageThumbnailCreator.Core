@@ -25,11 +25,14 @@ namespace ImageThumbnailCreator.Core.Tests
         public void CreateNewThumbnailDirectoryCreatesDirectorySuccessfully()
         {
             _thumbnailer.CheckAndCreateDirectory(_thumbnailFolder);
+            _thumbnailer.CheckAndCreateDirectory(_originalFileSaveFolder);
 
             Assert.True(Directory.Exists(_thumbnailFolder));
+            Assert.True(Directory.Exists(_originalFileSaveFolder));
 
-            // Cleanup the unnecessary folder
+            // Cleanup the unnecessary folders
             Directory.Delete(_thumbnailFolder);
+            Directory.Delete(_originalFileSaveFolder);
         }
 
         [Theory]
@@ -99,7 +102,7 @@ namespace ImageThumbnailCreator.Core.Tests
             //act
             string thumbnailSaveLocation = await _thumbnailer.Create(100, _thumbnailFolder, _originalFileSaveFolder, formFile, compressionLevel);
 
-            string[] images = Directory.GetFiles(_originalFileSaveFolder);
+            string[] images = Directory.GetFiles(_thumbnailFolder);
 
             //assert
             Assert.NotNull(thumbnailSaveLocation);
@@ -175,7 +178,7 @@ namespace ImageThumbnailCreator.Core.Tests
             {
                 if (Directory.Exists(_thumbnailFolder))
                 {
-                    Directory.Delete(_thumbnailFolder);
+                    Directory.Delete(_thumbnailFolder, true);
                 }
                 if (Directory.Exists(_originalFileSaveFolder))
                 {
