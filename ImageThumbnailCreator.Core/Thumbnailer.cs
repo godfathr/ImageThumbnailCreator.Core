@@ -93,6 +93,7 @@ namespace ImageThumbnailCreator
         /// <returns></returns>
         public async Task<string> Create(float width, string thumbnailImageFolder, string originalFileFolder, IFormFile photo, long compressionLevel = 85L)
         {
+            //TODO: too many responsibilities in this method. Refactor to make more testable.
             if (width < 1) throw new ArgumentException($"The width parameter must be greater than 0.");
             if (string.IsNullOrEmpty(thumbnailImageFolder)) throw new ArgumentNullException(nameof(thumbnailImageFolder));
             if (string.IsNullOrEmpty(originalFileFolder)) throw new ArgumentNullException(nameof(originalFileFolder));
@@ -307,7 +308,7 @@ namespace ImageThumbnailCreator
 
                 myEncoderParameters.Param[0] = myEncoderParameter;
 
-                string newThumbPath = thumbPath.Split('.').First().ToString();
+                string newThumbPath = thumbPath.Split('.').First().ToString(); //TODO: Left off - need to point the compressed thumbnail at the same location the ucompressed was saved
 
                 compressedThumbnail.Save($"{newThumbPath}_compressed.jpg", myImageCodecInfo, myEncoderParameters);
 
