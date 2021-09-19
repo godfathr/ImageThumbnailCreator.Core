@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ImageThumbnailCreator.Core</name>
+    </assembly>
+    <members>
+        <member name="T:ImageThumbnailCreator.Thumbnailer">
+            <summary>
+            The thumbnailer. Contains all methods for directory management, image orientation, compression and saving of files to disk.
+            </summary>
+        </member>
+        <member name="M:ImageThumbnailCreator.Thumbnailer.SaveOriginalAsync(System.String,Microsoft.AspNetCore.Http.IFormFile,System.Threading.CancellationToken)">
+            <summary>
+            Save the original image to a specified file path. Must be called explicitly from the calling application
+            if it is desired to keep the original file in addition to the thumbnail.
+            </summary>
+            <param name="imageFolder">Destination directory where the original file will be saved.</param>
+            <param name="photo">IFormFile for image sent from the HTTP request.</param>
+            <returns></returns>
+        </member>
+        <member name="M:ImageThumbnailCreator.Thumbnailer.Create(System.Single,System.String,System.String,Microsoft.AspNetCore.Http.IFormFile,System.Int64)">
+            <summary>
+            Save the original uploaded file to the file
+            </summary>
+            <param name="width">Desired width in pixels.</param>
+            <param name="thumbnailImageFolder">Destination directory where the thumbnail will be saved.</param>
+            <param name="originalFileFolder">Destination directory where the original file will be saved.</param>
+            <param name="photo">IFormFile for image sent from the HTTP request.</param>
+            <param name="compressionLevel">
+            A 64-bit integer that specifies the value stored in the System.Drawing.Imaging.EncoderParameter
+            object. Must be nonnegative. This parameter is converted to a 32-bit integer
+            before it is stored in the System.Drawing.Imaging.EncoderParameter object.</param>
+            <returns></returns>
+        </member>
+        <member name="M:ImageThumbnailCreator.Thumbnailer.SetDimensions(System.Single,System.Single@,System.Single@)">
+            <summary>
+            Calculates the dimensions of the thumbnail and returns them in a tuple with
+            height as the first item and width as the second item.
+            </summary>
+            <param name="width"></param>
+            <param name="imageWidth"></param>
+            <param name="imageHeight"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ImageThumbnailCreator.Thumbnailer.OrientUpright(System.Collections.Generic.List{System.Int32},System.Drawing.Image)">
+            <summary>
+            Make sure the image is rotated upright if it has an EXIF orientation set
+            </summary>
+            <param name="propertyIdList"></param>
+            <param name="srcImage"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ImageThumbnailCreator.Thumbnailer.SaveThumbnail(System.Drawing.Bitmap,System.String,System.String,System.Int64)">
+            <summary>
+            Save the thumbnail to a specified file path
+            </summary>
+            <param name="thumbnail"></param>
+            <param name="imagePath"></param>
+            <param name="thumbnailFileName"></param>
+            <param name="compressionLevel"></param>
+        </member>
+        <member name="M:ImageThumbnailCreator.Thumbnailer.CheckAndCreateDirectory(System.String)">
+            <summary>
+            Create the directory for storing image files if it doesn't already exist.
+            </summary>
+            <param name="imageFolder"></param>
+        </member>
+    </members>
+</doc>

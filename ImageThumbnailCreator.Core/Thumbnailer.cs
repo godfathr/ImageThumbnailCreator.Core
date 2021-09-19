@@ -14,6 +14,9 @@ using System.Threading.Tasks;
 
 namespace ImageThumbnailCreator
 {
+    /// <summary>
+    /// The thumbnailer. Contains all methods for directory management, image orientation, compression and saving of files to disk.
+    /// </summary>
     public class Thumbnailer : IFileManager, IThumbnailer
     {
         /// <summary>

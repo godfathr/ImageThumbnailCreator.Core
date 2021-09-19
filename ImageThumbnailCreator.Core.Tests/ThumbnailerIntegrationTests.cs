@@ -8,6 +8,9 @@ using Xunit;
 
 namespace ImageThumbnailCreator.Core.Tests
 {
+    /// <summary>
+    /// Integration tests.
+    /// </summary>
     public class ThumbnailerIntegrationTests : IClassFixture<DirectoryFixture>
     {
         private static string _testImageFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"TestImages");
@@ -36,6 +39,10 @@ namespace ImageThumbnailCreator.Core.Tests
         }
 
         [Theory]
+        [InlineData(@"landscapeForewardFacing.jpg")]
+        [InlineData(@"landscapeRearFacing.jpg")]
+        [InlineData(@"portraitForewardFacing.jpg")]
+        [InlineData(@"portraitRearFacing.jpg")]
         [InlineData(@"largeLandscape.jpg")]
         [InlineData(@"largePortrait.jpg")]
         [InlineData(@"largeSquare.jpg")]
@@ -91,7 +98,7 @@ namespace ImageThumbnailCreator.Core.Tests
         [InlineData(@"largeLandscape.png", 50L)]
         [InlineData(@"largePortrait.png", 50L)]
         [InlineData(@"largeSquare.png", 50L)]
-        public async Task CreateThumbnailSavesSuccesfully(string fileName, long compressionLevel)
+        public async Task CreateThumbnailWithSpecifiedCompressionSavesSuccesfully(string fileName, long compressionLevel)
         {
             //setup
             SetupTestDirectory();
@@ -101,6 +108,45 @@ namespace ImageThumbnailCreator.Core.Tests
 
             //act
             string thumbnailSaveLocation = await _thumbnailer.Create(100, _thumbnailFolder, _originalFileSaveFolder, formFile, compressionLevel);
+
+            string[] images = Directory.GetFiles(_thumbnailFolder);
+
+            //assert
+            Assert.NotNull(thumbnailSaveLocation);
+            Assert.Contains(fileName, thumbnailSaveLocation);
+            Assert.True(images.Length == 1);
+            Assert.Single(images);
+
+            //tear down
+            TearDownTestDirectory(); //TODO: Make this part of the test fixture so it runs even if assertions fail
+        }
+
+        [Theory]
+        [InlineData(@"largeLandscape.jpg")]
+        [InlineData(@"largePortrait.jpg")]
+        [InlineData(@"largeSquare.jpg")]
+        [InlineData(@"largeLandscape.tif")]
+        [InlineData(@"largePortrait.tif")]
+        [InlineData(@"largeSquare.tif")]
+        [InlineData(@"largeLandscape.bmp")]
+        [InlineData(@"largePortrait.bmp")]
+        [InlineData(@"largeSquare.bmp")]
+        [InlineData(@"largeLandscape.gif")]
+        [InlineData(@"largePortrait.gif")]
+        [InlineData(@"largeSquare.gif")]
+        [InlineData(@"largeLandscape.png")]
+        [InlineData(@"largePortrait.png")]
+        [InlineData(@"largeSquare.png")]
+        public async Task CreateThumbnailWithDefaultCompressionSavesSuccesfully(string fileName)
+        {
+            //setup
+            SetupTestDirectory();
+            string imageLocation = Path.Combine(_testImageFolder, fileName);
+
+            IFormFile formFile = ConvertFileToStream(imageLocation, this.GetImageTypeEnum(fileName), fileName);
+
+            //act
+            string thumbnailSaveLocation = await _thumbnailer.Create(100, _thumbnailFolder, _originalFileSaveFolder, formFile);
 
             string[] images = Directory.GetFiles(_thumbnailFolder);
 
