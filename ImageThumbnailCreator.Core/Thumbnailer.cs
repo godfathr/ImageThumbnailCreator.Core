@@ -1,5 +1,4 @@
 ﻿using ImageThumbnailCreator.Core;
-using ImageThumbnailCreator.Core.Extensions;
 using ImageThumbnailCreator.Interfaces;
 using Microsoft.AspNetCore.Http;
 using System;
@@ -308,9 +307,11 @@ namespace ImageThumbnailCreator
 
                 myEncoderParameters.Param[0] = myEncoderParameter;
 
-                string newThumbPath = thumbPath.Split('.').First().ToString(); //TODO: Left off - need to point the compressed thumbnail at the same location the ucompressed was saved
+                var originalThumbnail = Path.GetDirectoryName(thumbPath);
 
-                compressedThumbnail.Save($"{newThumbPath}_compressed.jpg", myImageCodecInfo, myEncoderParameters);
+                string newThumbPath = thumbPath.Split('\\').Last().ToString(); //TODO: Left off - need to point the compressed thumbnail at the same location the ucompressed was saved
+
+                compressedThumbnail.Save($"{originalThumbnail}_compressed.jpg", myImageCodecInfo, myEncoderParameters);
 
                 compressedThumbnail.Dispose();
 
