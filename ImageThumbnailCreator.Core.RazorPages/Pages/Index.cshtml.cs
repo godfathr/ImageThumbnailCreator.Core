@@ -36,6 +36,8 @@ namespace ImageThumbnailCreator.Core.RazorPages.Pages
 
         public async Task OnPostAsync()
         {
+            _thumbnailer.CheckAndCreateDirectory(_uploadFolder);
+
             var file = Path.Combine(_uploadFolder, Upload.FileName);
             using (var fileStream = new FileStream(file, FileMode.Create))
             {
