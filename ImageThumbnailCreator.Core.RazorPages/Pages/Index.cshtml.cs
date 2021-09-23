@@ -34,8 +34,8 @@ namespace ImageThumbnailCreator.Core.RazorPages.Pages
             _thumbnailer.CheckAndCreateDirectory(_uploadFolder);
             _thumbnailer.CheckAndCreateDirectory(_originalFileSaveFolder);
 
-            IFormFile formFile = ConvertFileToStream(imageLocation, this.GetImageTypeEnum(fileName), fileName);
-            string originalFileSaveLocation = await _thumbnailer.SaveOriginalAsync(_originalFileSaveFolder, formFile);
+            //IFormFile formFile = ConvertFileToStream(imageLocation, this.GetImageTypeEnum(fileName), fileName);
+            //string originalFileSaveLocation = await _thumbnailer.SaveOriginalAsync(_originalFileSaveFolder, formFile);
 
 
             using (var fileStream = new FileStream(file, FileMode.Create))

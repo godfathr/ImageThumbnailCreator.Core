@@ -25,6 +25,8 @@ namespace ImageThumbnailCreator
         /// <param name="imageFolder">Destination directory where the original file will be saved.</param>
         /// <param name="photo">IFormFile for image sent from the HTTP request.</param>
         /// <returns></returns>
+        
+        
         public async Task<string> SaveOriginalAsync(string imageFolder, IFormFile photo, CancellationToken cancellationToken = default)
         {
             try
@@ -134,6 +136,7 @@ namespace ImageThumbnailCreator
 
                 Tuple<float, float> dimensions = SetDimensions(width, ref imageWidth, ref imageHeight);
 
+                // TODO: update to use new FileInfo
                 string thumbnailFileName = originalFileLocation.Split('\\').Last().ToString();
                 var newWidth = (int)dimensions.Item2;
                 var newHeight = (int)dimensions.Item1;
@@ -286,11 +289,11 @@ namespace ImageThumbnailCreator
                 EncoderParameter myEncoderParameter;
                 EncoderParameters myEncoderParameters;
 
-                string thumbPath = Path.Combine(imagePath, $"thumb_{thumbnailFileName}");
+                string thumbPath = Path.Combine(imagePath, $"uncompressed_{thumbnailFileName}");
 
                 using (thumbnail)
                 {
-                    thumbnail.Save(thumbPath); //we have to save the newly created file to the file system for the next step where we use an encoder to compress the image
+                    thumbnail.Save($"{thumbPath}"); //we have to save the newly created file to the file system for the next step where we use an encoder to compress the image
                 }
 
                 thumbnail.Dispose();
@@ -309,9 +312,10 @@ namespace ImageThumbnailCreator
 
                 var originalThumbnail = Path.GetDirectoryName(thumbPath);
 
-                string newThumbPath = thumbPath.Split('\\').Last().ToString(); //TODO: Left off - need to point the compressed thumbnail at the same location the ucompressed was saved
+                //string newThumbPath = thumbPath.Split('\\').Last().ToString(); //TODO: Left off - need to point the compressed thumbnail at the same location the ucompressed was saved
+                //string newThumbPath2 = new FileInfo(thumbPath).Directory.FullName;
 
-                compressedThumbnail.Save($"{originalThumbnail}_compressed.jpg", myImageCodecInfo, myEncoderParameters);
+                compressedThumbnail.Save($"{imagePath}\\thumb_{thumbnailFileName}", myImageCodecInfo, myEncoderParameters);
 
                 compressedThumbnail.Dispose();
 
@@ -319,7 +323,7 @@ namespace ImageThumbnailCreator
                 DirectoryInfo di = new DirectoryInfo(imagePath);
 
                 FileInfo uncompressedThumbnail = di.GetFiles()
-                    .Where(f => f.Name.Equals($"thumb_{ thumbnailFileName}"))
+                    .Where(f => f.Name.Equals($"uncompressed_{ thumbnailFileName}"))
                     .FirstOrDefault();
                 if (uncompressedThumbnail != null && uncompressedThumbnail.Exists)
                 {

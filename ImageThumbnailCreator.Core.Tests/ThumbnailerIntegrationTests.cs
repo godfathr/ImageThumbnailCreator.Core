@@ -114,8 +114,7 @@ namespace ImageThumbnailCreator.Core.Tests
             //assert
             Assert.NotNull(thumbnailSaveLocation);
             Assert.Contains(fileName, thumbnailSaveLocation);
-            Assert.True(images.Length == 1);
-            Assert.Single(images);
+            Assert.True(images.Length == 2); // should be the original image and the thumbnail version
 
             //tear down
             TearDownTestDirectory(); //TODO: Make this part of the test fixture so it runs even if assertions fail
