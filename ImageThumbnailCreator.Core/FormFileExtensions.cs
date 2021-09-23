@@ -8,8 +8,19 @@ using System.Threading.Tasks;
 
 namespace ImageThumbnailCreator.Core.Extensions
 {
+    /// <summary>
+    /// DEPRECATED.Extracted extension methods for an IFormFile.
+    /// Not valid in after version 
+    /// </summary>
+    [Obsolete]
     public static class IFormFileExtensions
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="formFile"></param>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public static async Task<string> SaveAsAsync(this IFormFile formFile, string path)
         {
             try

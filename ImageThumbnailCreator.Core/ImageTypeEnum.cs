@@ -6,8 +6,14 @@ using System.Threading.Tasks;
 
 namespace ImageThumbnailCreator.Core
 {
+    /// <summary>
+    /// Enum of supported image types.
+    /// </summary>
     public static class ImageTypeEnum
     {
+        /// <summary>
+        /// Enum of supported image types.
+        /// </summary>
         public static Dictionary<string, string> ImageTypes = new Dictionary<string, string>()
         {
             { "Jpeg", "image/jpeg" },

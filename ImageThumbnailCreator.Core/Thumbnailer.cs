@@ -24,9 +24,8 @@ namespace ImageThumbnailCreator
         /// </summary>
         /// <param name="imageFolder">Destination directory where the original file will be saved.</param>
         /// <param name="photo">IFormFile for image sent from the HTTP request.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns></returns>
-        
-        
         public async Task<string> SaveOriginalAsync(string imageFolder, IFormFile photo, CancellationToken cancellationToken = default)
         {
             try
@@ -354,7 +353,7 @@ namespace ImageThumbnailCreator
         /// <summary>
         /// Create the directory for storing image files if it doesn't already exist.
         /// </summary>
-        /// <param name="imageFolder"></param>
+        /// <param name="imageFolderPath"></param>
         public void CheckAndCreateDirectory(string imageFolderPath)
         {
             try

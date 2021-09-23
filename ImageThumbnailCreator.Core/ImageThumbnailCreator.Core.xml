@@ -4,6 +4,95 @@
         <name>ImageThumbnailCreator.Core</name>
     </assembly>
     <members>
+        <member name="T:ImageThumbnailCreator.Core.Extensions.IFormFileExtensions">
+            <summary>
+            DEPRECATED.Extracted extension methods for an IFormFile.
+            Not valid in after version 
+            </summary>
+        </member>
+        <member name="M:ImageThumbnailCreator.Core.Extensions.IFormFileExtensions.SaveAsAsync(Microsoft.AspNetCore.Http.IFormFile,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="formFile"></param>
+            <param name="path"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ImageThumbnailCreator.Core.ImageTypeEnum">
+            <summary>
+            Enum of supported image types.
+            </summary>
+        </member>
+        <member name="F:ImageThumbnailCreator.Core.ImageTypeEnum.ImageTypes">
+            <summary>
+            Enum of supported image types.
+            </summary>
+        </member>
+        <member name="T:ImageThumbnailCreator.Interfaces.IFileManager">
+            <summary>
+            Interface for file management
+            </summary>
+        </member>
+        <member name="M:ImageThumbnailCreator.Interfaces.IFileManager.CheckAndCreateDirectory(System.String)">
+            <summary>
+            If directory does not exist, create it.
+            </summary>
+            <param name="imageFolderPath">Path where directory should be created</param>
+        </member>
+        <member name="M:ImageThumbnailCreator.Interfaces.IFileManager.SaveOriginalAsync(System.String,Microsoft.AspNetCore.Http.IFormFile,System.Threading.CancellationToken)">
+            <summary>
+            Save the original file that is being uploaded and thumbnailed.
+            </summary>
+            <param name="imageFolder">Path to folder where file will be saved</param>
+            <param name="photo">Image from HttpRequest</param>
+            <param name="cancellationToken">Cancellation token</param>
+            <returns></returns>
+        </member>
+        <member name="M:ImageThumbnailCreator.Interfaces.IFileManager.SaveThumbnail(System.Drawing.Bitmap,System.String,System.String,System.Int64)">
+            <summary>
+            Save the smaller resoluation, and if applicable, compress the thumbnail with the desired compression level.
+            </summary>
+            <param name="thumbnail">Bitmap object</param>
+            <param name="imagePath">Path to directory</param>
+            <param name="thumbnailFileName">Name of thumbnail</param>
+            <param name="compressionLevel">Desired compression level</param>
+            <returns></returns>
+        </member>
+        <member name="T:ImageThumbnailCreator.Interfaces.IThumbnailer">
+            <summary>
+            Thumbnailer interface
+            </summary>
+        </member>
+        <member name="M:ImageThumbnailCreator.Interfaces.IThumbnailer.Create(System.Single,System.String,System.String,Microsoft.AspNetCore.Http.IFormFile,System.Int64)">
+            <summary>
+            Worker class that creates the thumbnail.
+            </summary>
+            <param name="width"></param>
+            <param name="thumbnailImageFolder"></param>
+            <param name="originalFileFolder"></param>
+            <param name="photo"></param>
+            <param name="compressionLevel"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ImageThumbnailCreator.Interfaces.IThumbnailer.OrientUpright(System.Collections.Generic.List{System.Int32},System.Drawing.Image)">
+            <summary>
+            Ensure that uploaded files are oriented the way the photo was taken or image was created.
+            Guards against images taken with a rear facing camera or landscape/portrait image from being displayed or saved
+            with the wrong corner as the origin or in the wrong orientation.
+            </summary>
+            <param name="propertyIdList"></param>
+            <param name="srcImage"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ImageThumbnailCreator.Interfaces.IThumbnailer.SetDimensions(System.Single,System.Single@,System.Single@)">
+            <summary>
+            Set the height and width of the images
+            </summary>
+            <param name="width"></param>
+            <param name="imageWidth"></param>
+            <param name="imageHeight"></param>
+            <returns></returns>
+        </member>
         <member name="T:ImageThumbnailCreator.Thumbnailer">
             <summary>
             The thumbnailer. Contains all methods for directory management, image orientation, compression and saving of files to disk.
@@ -16,6 +105,7 @@
             </summary>
             <param name="imageFolder">Destination directory where the original file will be saved.</param>
             <param name="photo">IFormFile for image sent from the HTTP request.</param>
+            <param name="cancellationToken">Cancellation token.</param>
             <returns></returns>
         </member>
         <member name="M:ImageThumbnailCreator.Thumbnailer.Create(System.Single,System.String,System.String,Microsoft.AspNetCore.Http.IFormFile,System.Int64)">
@@ -63,7 +153,7 @@
             <summary>
             Create the directory for storing image files if it doesn't already exist.
             </summary>
-            <param name="imageFolder"></param>
+            <param name="imageFolderPath"></param>
         </member>
     </members>
 </doc>
