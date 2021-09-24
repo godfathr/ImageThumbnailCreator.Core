@@ -11,8 +11,12 @@ Excellent addition for custom blog sites, local file management, and even a tool
 
 - *Thumbnails will be saved to the file system automatically.*
 
-## Repository location 
+## Repository 
 [https://github.com/godfathr/ImageThumbnailCreator.Core](https://github.com/godfathr/ImageThumbnailCreator.Core).
+
+
+### Sample projects
+- [Razor pages](https://github.com/godfathr/ImageThumbnailCreator.Core/tree/main/ImageThumbnailCreator.Core.RazorPages)
 
 ### Sample usage
 ```
