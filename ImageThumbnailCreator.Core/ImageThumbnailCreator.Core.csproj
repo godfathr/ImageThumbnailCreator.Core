@@ -1,9 +1,25 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.9</Version>
+    <Version>1.0.1</Version>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <PackageProjectUrl>https://github.com/godfathr/ImageThumbnailCreator.Core/projects/1</PackageProjectUrl>
+    <PackageIcon>ImageThumbnailCreatorIconNET5.jpg</PackageIcon>
+    <PackageIconUrl>
+      https://github.com/godfathr/ImageThumbnailCreator.Core/blob/main/ImageThumbnailCreator.Core/ImageThumbnailCreatorIcon.jpg
+    </PackageIconUrl>
+    <RepositoryUrl>
+      https://github.com/godfathr/ImageThumbnailCreator.Core
+    </RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <PackageTags>thumbnail, thumbnailer, photo, photograph, image, picture, upload, processor, compression, compress</PackageTags>
+    <PackageReleaseNotes>Initial build of the .NET 5 version of the ImageThumbnailCreator.</PackageReleaseNotes>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <AssemblyVersion>1.0.1.0</AssemblyVersion>
+    <FileVersion>1.0.1.0</FileVersion>
+    <Description>Create thumbnails from images. Save the original with the thumbnail version for easy links to full resolution version. Downsize large resolution images and compress thumbnails to your desired level. Excellent addition for custom blog sites, local file management, and even a tool to quickly downsize images for your custom content.</Description>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -17,6 +33,17 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\ImageThumbnailCreator\LICENSE.txt">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="ImageThumbnailCreatorIconNET5.jpg">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
