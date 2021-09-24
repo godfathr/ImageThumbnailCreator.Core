@@ -19,8 +19,7 @@
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <AssemblyVersion>1.0.1.0</AssemblyVersion>
     <FileVersion>1.0.1.0</FileVersion>
-    <Description>Create thumbnails from images. Save the original with the thumbnail version for easy links to full resolution version.
-Downsize large resolution images and compress thumbnails to your desired level. Excellent addition for custom blog sites, local file management, and even a tool to quickly downsize images for your custom content.</Description>
+    <Description>Create thumbnails from images. Save the original with the thumbnail version for easy links to full resolution version. Downsize large resolution images and compress thumbnails to your desired level. Excellent addition for custom blog sites, local file management, and even a tool to quickly downsize images for your custom content.</Description>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
