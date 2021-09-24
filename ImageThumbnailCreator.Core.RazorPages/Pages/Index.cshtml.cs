@@ -2,9 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -12,40 +10,32 @@ namespace ImageThumbnailCreator.Core.RazorPages.Pages
 {
     public class IndexModel : PageModel
     {
-        private IConfigurationRoot _configuration;
         private IWebHostEnvironment _environment;
         private readonly ILogger<IndexModel> _logger;
         private static Thumbnailer _thumbnailer = new Thumbnailer();
+        private static string _uploadFolder;
 
-        private static string _uploadFolder;// = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"wwwroot\uploads");
-        //private static string _originalFileSaveFolder = Path.Combine(_uploadFolder, @"Thumbnails"); //if original files need to be in a separate directory
+        [BindProperty]
+        public IFormFile Upload { get; set; }
 
-        public IndexModel(
-            IConfiguration configuration,
-            IWebHostEnvironment environment, 
-            ILogger<IndexModel> logger)
+        public IndexModel(IWebHostEnvironment environment, ILogger<IndexModel> logger)
         {
-            _configuration = (IConfigurationRoot)configuration;
             _environment = environment;
             _logger = logger;
             _uploadFolder = Path.Combine(_environment.ContentRootPath, "wwwroot\\uploads");
         }
 
-        [BindProperty]
-        public IFormFile Upload { get; set; }
-
         public async Task OnPostAsync()
         {
+            // if upload directory doesn't exist, create it
             _thumbnailer.CheckAndCreateDirectory(_uploadFolder);
 
             var file = Path.Combine(_uploadFolder, Upload.FileName);
             using (var fileStream = new FileStream(file, FileMode.Create))
             {
-                await Upload.CopyToAsync(fileStream);
+                var thumbnailPath = await _thumbnailer.Create(200, _uploadFolder, $"{_uploadFolder}\\originals", Upload, 90L);
 
-                var thumbnail = await _thumbnailer.Create(200, _uploadFolder, $"{_uploadFolder}\\originals", Upload, 90L);
-
-                _logger.LogInformation($"Successfully uploaded {Upload.FileName} to {thumbnail}");
+                _logger.LogInformation($"Successfully uploaded {Upload.FileName} to {thumbnailPath}");
             }
         }
     }
