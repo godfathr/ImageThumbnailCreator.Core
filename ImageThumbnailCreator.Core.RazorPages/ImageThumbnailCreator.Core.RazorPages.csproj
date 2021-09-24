@@ -5,11 +5,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ImageThumbnailCreator.Core\ImageThumbnailCreator.Core.csproj" />
+    <Folder Include="wwwroot\uploads\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\uploads\" />
+    <PackageReference Include="ImageThumbnailCreator.Core" Version="1.0.1" />
   </ItemGroup>
 
 </Project>
