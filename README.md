@@ -1,7 +1,7 @@
-# Image Thumbnail Creator .NET 5
+# Image Thumbnail Creator .NET Standard 2.0
 
 ## Short description
-- Create thumbnails from images
+- Create simple thumbnails from images
 - Save the original with the thumbnail version for easy links to full resolution version
 - Downsize large resolution images and compress thumbnails to your desired level
 
@@ -33,11 +33,10 @@ string imageLocation = Path.Combine(_testImageFolder, fileName);
 IFormFile formFile = _fixture.ConvertFileToStream(imageLocation, _fixture.GetImageTypeEnum(fileName), fileName);
 ```
 
-Specify a compression level:
+Specify a compression level of 75:
 ```
 //With specified compression level of 75
 string thumbnailSaveLocation = await _thumbnailer.Create(250, _thumbnailAndOriginalSaveFolder, _thumbnailAndOriginalSaveFolder, formFile, 75L);
-
 ```
 
 OR if a compression value is not provided, the default 85 will be used:
