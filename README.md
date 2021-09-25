@@ -12,39 +12,84 @@ Excellent addition for custom blog sites, local file management, and even a tool
 - *Thumbnails will be saved to the file system automatically.*
 
 ## Repository 
-[https://github.com/godfathr/ImageThumbnailCreator.Core](https://github.com/godfathr/ImageThumbnailCreator.Core).
+[https://github.com/godfathr/ImageThumbnailCreator.Core](https://github.com/godfathr/ImageThumbnailCreator.Core)
 
 
-### Sample projects
+## Sample projects
 - [Razor pages](https://github.com/godfathr/ImageThumbnailCreator.Core/tree/main/ImageThumbnailCreator.Core.RazorPages)
+- *More to come...*
 
-### Sample usage
+## Sample usage
+### Razor Pages
+*Index.cshtml*
 ```
-private static string _thumbnailAndOriginalSaveFolder = Path.Combine(_testImageFolder, @"ProcessedImages");
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
 
-private Thumbnailer _thumbnailer = new Thumbnailer();
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Short example to show an implementation of the ImageThumbnailCreator.Core NuGet package.</p>
+
+    <form method="post" enctype="multipart/form-data">
+        <input type="file" asp-for="Upload" />
+        <input type="submit" />
+    </form>
+</div>
 
 ```
+Index.cshtml.cs
+```
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Logging;
+using System.IO;
+using System.Threading.Tasks;
 
-```
-//Save the original photo at its original resolution
-string imageLocation = Path.Combine(_testImageFolder, fileName);
+namespace ImageThumbnailCreator.Core.RazorPages.Pages
+{
+    public class IndexModel : PageModel
+    {
+        private IWebHostEnvironment _environment;
+        private readonly ILogger<IndexModel> _logger;
+        private static Thumbnailer _thumbnailer = new Thumbnailer();
+        private static string _uploadFolder;
 
-IFormFile formFile = _fixture.ConvertFileToStream(imageLocation, _fixture.GetImageTypeEnum(fileName), fileName);
+        [BindProperty]
+        public IFormFile Upload { get; set; }
+
+        public IndexModel(IWebHostEnvironment environment, ILogger<IndexModel> logger)
+        {
+            _environment = environment;
+            _logger = logger;
+            _uploadFolder = Path.Combine(_environment.ContentRootPath, "wwwroot\\uploads");
+        }
+
+        public async Task OnPostAsync()
+        {
+            // if upload directory doesn't exist, create it
+            _thumbnailer.CheckAndCreateDirectory(_uploadFolder);
+
+            // Create the thumbnail and save original upload
+
+            // Compression level 90 as optional parameter
+            var thumbnailPath = await _thumbnailer.Create(200, _uploadFolder, $"{_uploadFolder}\\originals", Upload, 90L);
+
+            // Compression level 85 if no compression parameter supplied
+            //var thumbnailPath = await _thumbnailer.Create(200, _uploadFolder, $"{_uploadFolder}\\originals", Upload);
+
+            _logger.LogInformation($"Successfully uploaded {Upload.FileName} to {thumbnailPath}");
+        }
+    }
+}
 ```
 
-Specify a compression level of 75:
-```
-//With specified compression level of 75
-string thumbnailSaveLocation = await _thumbnailer.Create(250, _thumbnailAndOriginalSaveFolder, _thumbnailAndOriginalSaveFolder, formFile, 75L);
-```
-
-OR if a compression value is not provided, the default 85 will be used:
-```
-string thumbnailSaveLocation = await _thumbnailer.Create(250, _thumbnailAndOriginalSaveFolder, _thumbnailAndOriginalSaveFolder, formFile);
-```
 ### Link to .NET Framework version
-[https://dotnet.microsoft.com/download/dotnet/5.0](https://dotnet.microsoft.com/download/dotnet/5.0)
+[https://dotnet.microsoft.com/download/visual-studio-sdks](https://dotnet.microsoft.com/download/visual-studio-sdks)
 
 ### Link to report issues
 [https://github.com/godfathr/ImageThumbnailCreator.Core/issues](https://github.com/godfathr/ImageThumbnailCreator.Core/issues)
