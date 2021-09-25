@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ImageThumbnailCreator.Core\ImageThumbnailCreator.Core.csproj" />
+    <PackageReference Include="ImageThumbnailCreator.Core" Version="1.0.1" />
   </ItemGroup>
 
 </Project>
