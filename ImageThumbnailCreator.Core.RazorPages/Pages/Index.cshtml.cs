@@ -30,13 +30,9 @@ namespace ImageThumbnailCreator.Core.RazorPages.Pages
             // if upload directory doesn't exist, create it
             _thumbnailer.CheckAndCreateDirectory(_uploadFolder);
 
-            var file = Path.Combine(_uploadFolder, Upload.FileName);
-            using (var fileStream = new FileStream(file, FileMode.Create))
-            {
-                var thumbnailPath = await _thumbnailer.Create(200, _uploadFolder, $"{_uploadFolder}\\originals", Upload, 90L);
+            var thumbnailPath = await _thumbnailer.Create(200, _uploadFolder, $"{_uploadFolder}\\originals", Upload, 90L);
 
-                _logger.LogInformation($"Successfully uploaded {Upload.FileName} to {thumbnailPath}");
-            }
+            _logger.LogInformation($"Successfully uploaded {Upload.FileName} to {thumbnailPath}");
         }
     }
 }
