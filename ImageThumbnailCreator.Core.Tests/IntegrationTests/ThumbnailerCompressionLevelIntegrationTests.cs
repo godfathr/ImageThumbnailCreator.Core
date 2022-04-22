@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace ImageThumbnailCreator.Core.Tests
+namespace ImageThumbnailCreator.Core.Tests.IntegrationTests
 {
     [Collection("CompressionLevel")]
     /// <summary>
@@ -26,6 +26,7 @@ namespace ImageThumbnailCreator.Core.Tests
         }
 
         [Theory]
+        [Trait("Category", "Integration")]
         [InlineData(@"largeLandscape.jpg", 50L)]
         [InlineData(@"largePortrait.jpg", 50L)]
         [InlineData(@"largeSquare.jpg", 50L)]
@@ -46,7 +47,7 @@ namespace ImageThumbnailCreator.Core.Tests
             //setup
             _fixture.TearDownTestDirectory();
             _fixture.SetupTestDirectory();
-            
+
             string imageLocation = Path.Combine(_testImageFolder, fileName);
             IFormFile formFile = _fixture.ConvertFileToStream(imageLocation, _fixture.GetImageTypeEnum(fileName), fileName);
 

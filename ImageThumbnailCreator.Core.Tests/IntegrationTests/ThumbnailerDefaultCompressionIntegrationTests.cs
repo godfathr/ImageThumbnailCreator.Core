@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace ImageThumbnailCreator.Core.Tests
+namespace ImageThumbnailCreator.Core.Tests.IntegrationTests
 {
     [Collection("DefaultCompression")]
     /// <summary>
@@ -26,6 +26,7 @@ namespace ImageThumbnailCreator.Core.Tests
         }
 
         [Theory]
+        [Trait("Category", "Integration")]
         [InlineData(@"largeLandscape.jpg")]
         [InlineData(@"largePortrait.jpg")]
         [InlineData(@"largeSquare.jpg")]

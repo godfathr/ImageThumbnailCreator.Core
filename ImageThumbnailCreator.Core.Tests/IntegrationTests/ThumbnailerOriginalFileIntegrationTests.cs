@@ -6,9 +6,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace ImageThumbnailCreator.Core.Tests
+namespace ImageThumbnailCreator.Core.Tests.IntegrationTests
 {
     [Collection("OriginalFile")]
+    [Trait("Category", "Integration")]
     /// <summary>
     /// Integration tests.
     /// </summary>
@@ -26,6 +27,7 @@ namespace ImageThumbnailCreator.Core.Tests
         }
 
         [Theory]
+        [Trait("Category", "Integration")]
         [InlineData(@"landscapeForewardFacing.jpg")]
         [InlineData(@"landscapeRearFacing.jpg")]
         [InlineData(@"portraitForewardFacing.jpg")]

@@ -71,7 +71,7 @@ namespace ImageThumbnailCreator
                     }
                 }
 
-                return response;
+                return response; //TODO: If photo.length is not greater than 0, then we need to throw
             }
             catch (Exception ex)
             {
