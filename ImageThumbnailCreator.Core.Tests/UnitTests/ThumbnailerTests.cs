@@ -16,7 +16,7 @@ namespace ImageThumbnailCreator.Core.Tests.UnitTests
         private readonly Mock<IThumbnailer> _thumbnailerMock = new Mock<IThumbnailer>();
         private readonly Mock<IFormFile> _formFileMock = new Mock<IFormFile>();
 
-        private const string FileName = "ChuckNorrisOrderedAWhopperAtMcDonaldsAndGotOne";
+        private const string FileName = "ChuckNorrisOrderedAWhopperAtMcDonaldsAndGotOne.jpeg";
         private const string DirectoryName = "c:\\temp";
 
         public ThumbnailerTests()
@@ -41,7 +41,7 @@ namespace ImageThumbnailCreator.Core.Tests.UnitTests
                 .Returns(1080);
         }
 
-        [Fact(DisplayName = "SaveOriginalAsync Happy Path")]
+        [Fact(DisplayName = "SaveOriginalAsync happy path")]
         public async Task SaveOriginalAsync_ValidParameters_ReturnsExpectedString()
         {
             //setup
@@ -49,6 +49,20 @@ namespace ImageThumbnailCreator.Core.Tests.UnitTests
 
             //act
             var result = await sut.SaveOriginalAsync(DirectoryName, _formFileMock.Object, CancellationToken.None);
+
+            //assert
+            result.Should().NotBeNull();
+            result.Should().Contain(DirectoryName).And.Contain(FileName);
+        }
+
+        [Fact(DisplayName = "SaveOriginalAsync happy path")]
+        public async Task CreateAsync_ValidParameters_ReturnsExpectedString()
+        {
+            //setup
+            var sut = GetThumbnailer();
+
+            //act
+            var result = await sut.CreateAsync(200L, DirectoryName, DirectoryName, _formFileMock.Object, 70L);
 
             //assert
             result.Should().NotBeNull();

@@ -63,7 +63,7 @@
             ImageAction interface
             </summary>
         </member>
-        <member name="M:ImageThumbnailCreator.Core.Interfaces.IImageActionManager.Create(System.Single,System.String,System.String,Microsoft.AspNetCore.Http.IFormFile,System.Int64)">
+        <member name="M:ImageThumbnailCreator.Core.Interfaces.IImageActionManager.CreateAsync(System.Single,System.String,System.String,Microsoft.AspNetCore.Http.IFormFile,System.Int64)">
             <summary>
             Worker class that creates the thumbnail.
             </summary>
@@ -109,7 +109,7 @@
         <member name="M:ImageThumbnailCreator.Thumbnailer.SaveOriginalAsync(System.String,Microsoft.AspNetCore.Http.IFormFile,System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="M:ImageThumbnailCreator.Thumbnailer.Create(System.Single,System.String,System.String,Microsoft.AspNetCore.Http.IFormFile,System.Int64)">
+        <member name="M:ImageThumbnailCreator.Thumbnailer.CreateAsync(System.Single,System.String,System.String,Microsoft.AspNetCore.Http.IFormFile,System.Int64)">
             <inheritdoc/>
         </member>
         <member name="M:ImageThumbnailCreator.Thumbnailer.SetDimensions(System.Single,System.Single@,System.Single@)">

@@ -52,7 +52,7 @@ namespace ImageThumbnailCreator.Core.Tests.IntegrationTests
             IFormFile formFile = _fixture.ConvertFileToStream(imageLocation, _fixture.GetImageTypeEnum(fileName), fileName);
 
             //act
-            string thumbnailSaveLocation = _thumbnailer.Create(100, _thumbnailAndOriginalSaveFolder, _thumbnailAndOriginalSaveFolder, formFile, compressionLevel).Result;
+            string thumbnailSaveLocation = _thumbnailer.CreateAsync(100, _thumbnailAndOriginalSaveFolder, _thumbnailAndOriginalSaveFolder, formFile, compressionLevel).Result;
 
             string[] images = Directory.GetFiles(_thumbnailAndOriginalSaveFolder);
 

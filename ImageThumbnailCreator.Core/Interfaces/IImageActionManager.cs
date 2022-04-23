@@ -23,7 +23,7 @@ namespace ImageThumbnailCreator.Core.Interfaces
         /// object. Must be nonnegative. This parameter is converted to a 32-bit integer
         /// before it is stored in the System.Drawing.Imaging.EncoderParameter object.</param>
         /// <returns><see cref="Task"/>&lt;<see cref="string"/>&gt; File path to where the image was saved.</returns>
-        Task<string> Create(float width, string thumbnailImageFolder, string originalFileFolder, IFormFile photo, long compressionLevel);
+        Task<string> CreateAsync(float width, string thumbnailImageFolder, string originalFileFolder, IFormFile photo, long compressionLevel);
 
         /// <summary>
         /// Ensure that uploaded files are oriented the way the photo was taken or image was created.

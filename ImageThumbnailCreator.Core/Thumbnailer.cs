@@ -73,7 +73,7 @@ namespace ImageThumbnailCreator
         }
 
         /// <inheritdoc/>
-        public async Task<string> Create(float width, string thumbnailImageFolder, string originalFileFolder, IFormFile photo, long compressionLevel = 85L)
+        public async Task<string> CreateAsync(float width, string thumbnailImageFolder, string originalFileFolder, IFormFile photo, long compressionLevel = 85L)
         {
             //TODO: too many responsibilities in this method. Refactor to make more testable.
             if (width < 1) throw new ArgumentException($"The width parameter must be greater than 0.");
