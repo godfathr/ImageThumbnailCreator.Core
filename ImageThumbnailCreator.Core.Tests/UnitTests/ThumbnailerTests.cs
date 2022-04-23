@@ -1,21 +1,19 @@
 ﻿using FluentAssertions;
-using ImageThumbnailCreator.Interfaces;
+using ImageThumbnailCreator.Core.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace ImageThumbnailCreator.Core.Tests.UnitTests
 {
+    [Trait("Category", "Unit")]
     public class ThumbnailerTests
     {
-        private readonly Mock<IThumbnailer> _thumbnailerMock = new Mock<IThumbnailer>();
+        private readonly Mock<IImageActionManager> _imageActionManagerMock = new Mock<IImageActionManager>();
         private readonly Mock<IFileManager> _fileManagerMock = new Mock<IFileManager>();
+        private readonly Mock<IThumbnailer> _thumbnailerMock = new Mock<IThumbnailer>();
         private readonly Mock<IFormFile> _formFileMock = new Mock<IFormFile>();
 
         private const string FileName = "ChuckNorrisOrderedAWhopperAtMcDonaldsAndGotOne";
@@ -44,7 +42,6 @@ namespace ImageThumbnailCreator.Core.Tests.UnitTests
         }
 
         [Fact(DisplayName = "SaveOriginalAsync Happy Path")]
-        [Trait("Category", "Unit")]
         public async Task SaveOriginalAsync_ValidParameters_ReturnsExpectedString()
         {
             //setup

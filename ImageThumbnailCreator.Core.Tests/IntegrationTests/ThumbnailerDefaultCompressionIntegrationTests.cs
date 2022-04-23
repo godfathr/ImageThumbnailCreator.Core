@@ -8,7 +8,7 @@ using Xunit;
 
 namespace ImageThumbnailCreator.Core.Tests.IntegrationTests
 {
-    [Collection("DefaultCompression")]
+    [Collection("Compression")]
     /// <summary>
     /// Integration tests.
     /// </summary>

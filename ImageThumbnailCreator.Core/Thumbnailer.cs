@@ -1,5 +1,5 @@
 ﻿using ImageThumbnailCreator.Core;
-using ImageThumbnailCreator.Interfaces;
+using ImageThumbnailCreator.Core.Interfaces;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -14,18 +14,11 @@ using System.Threading.Tasks;
 namespace ImageThumbnailCreator
 {
     /// <summary>
-    /// The thumbnailer. Contains all methods for directory management, image orientation, compression and saving of files to disk.
+    /// Implementation of directory management, image manipulation, compression and file management.
     /// </summary>
-    public class Thumbnailer : IFileManager, IThumbnailer
+    public class Thumbnailer : IThumbnailer
     {
-        /// <summary>
-        /// Save the original image to a specified file path. Must be called explicitly from the calling application
-        /// if it is desired to keep the original file in addition to the thumbnail.
-        /// </summary>
-        /// <param name="imageFolder">Destination directory where the original file will be saved.</param>
-        /// <param name="photo">IFormFile for image sent from the HTTP request.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns></returns>
+        /// <inheritdoc/>
         public async Task<string> SaveOriginalAsync(string imageFolder, IFormFile photo, CancellationToken cancellationToken = default)
         {
             try
@@ -79,18 +72,7 @@ namespace ImageThumbnailCreator
             }
         }
 
-        /// <summary>
-        /// Save the original uploaded file to the file
-        /// </summary>
-        /// <param name="width">Desired width in pixels.</param>
-        /// <param name="thumbnailImageFolder">Destination directory where the thumbnail will be saved.</param>
-        /// <param name="originalFileFolder">Destination directory where the original file will be saved.</param>
-        /// <param name="photo">IFormFile for image sent from the HTTP request.</param>
-        /// <param name="compressionLevel">
-        /// A 64-bit integer that specifies the value stored in the System.Drawing.Imaging.EncoderParameter
-        /// object. Must be nonnegative. This parameter is converted to a 32-bit integer
-        /// before it is stored in the System.Drawing.Imaging.EncoderParameter object.</param>
-        /// <returns></returns>
+        /// <inheritdoc/>
         public async Task<string> Create(float width, string thumbnailImageFolder, string originalFileFolder, IFormFile photo, long compressionLevel = 85L)
         {
             //TODO: too many responsibilities in this method. Refactor to make more testable.
@@ -180,14 +162,7 @@ namespace ImageThumbnailCreator
             }
         }
 
-        /// <summary>
-        /// Calculates the dimensions of the thumbnail and returns them in a tuple with
-        /// height as the first item and width as the second item.
-        /// </summary>
-        /// <param name="width"></param>
-        /// <param name="imageWidth"></param>
-        /// <param name="imageHeight"></param>
-        /// <returns></returns>
+        /// <inheritdoc/>
         public Tuple<float, float> SetDimensions(float width, ref float imageWidth, ref float imageHeight)
         {
             if (width < 1) throw new ArgumentException($"The width parameter must be greater than 0.");
@@ -221,12 +196,7 @@ namespace ImageThumbnailCreator
             }
         }
 
-        /// <summary>
-        /// Make sure the image is rotated upright if it has an EXIF orientation set
-        /// </summary>
-        /// <param name="propertyIdList"></param>
-        /// <param name="srcImage"></param>
-        /// <returns></returns>
+        /// <inheritdoc/>
         public RotateFlipType OrientUpright(List<int> propertyIdList, Image srcImage)
         {
             if (srcImage == null) throw new ArgumentNullException(nameof(srcImage));
@@ -267,15 +237,8 @@ namespace ImageThumbnailCreator
             }
         }
 
-        /// <summary>
-        /// Save the thumbnail to a specified file path
-        /// </summary>
-        /// <param name="thumbnail"></param>
-        /// <param name="imagePath"></param>
-        /// <param name="thumbnailFileName"></param>
-        /// <param name="compressionLevel"></param>
+        /// <inheritdoc/>
         public string SaveThumbnail(Bitmap thumbnail, string imagePath, string thumbnailFileName, long compressionLevel = 85L)
-        //public string SaveThumbnail(Image thumbnail, string imagePath, string thumbnailFileName)
         {
             if (thumbnail == null) throw new ArgumentNullException(nameof(thumbnail));
             if (string.IsNullOrEmpty(imagePath)) throw new ArgumentNullException(nameof(imagePath));
@@ -337,7 +300,12 @@ namespace ImageThumbnailCreator
             }
         }
 
-        private static ImageCodecInfo GetEncoderInfo(String mimeType)
+        /// <summary>
+        /// Retrieves a <see cref="ImageCodecInfo"/> for a given mimeType.
+        /// </summary>
+        /// <param name="mimeType">String name for an <see cref="ImageCodecInfo.MimeType"/></param>
+        /// <returns><see cref="ImageCodecInfo"/></returns>
+        private static ImageCodecInfo GetEncoderInfo(string mimeType)
         {
             int j;
             ImageCodecInfo[] encoders;
@@ -350,15 +318,15 @@ namespace ImageThumbnailCreator
             return null;
         }
 
-        /// <summary>
-        /// Create the directory for storing image files if it doesn't already exist.
-        /// </summary>
-        /// <param name="imageFolderPath"></param>
+        ///<inheritdoc />
         public void CheckAndCreateDirectory(string imageFolderPath)
         {
+            if (string.IsNullOrWhiteSpace(imageFolderPath))
+                throw new ArgumentNullException(nameof(imageFolderPath));
             try
             {
-                Directory.CreateDirectory(imageFolderPath);
+                if (!Directory.Exists(imageFolderPath))
+                    Directory.CreateDirectory(imageFolderPath);
             }
             catch (Exception ex)
             {
