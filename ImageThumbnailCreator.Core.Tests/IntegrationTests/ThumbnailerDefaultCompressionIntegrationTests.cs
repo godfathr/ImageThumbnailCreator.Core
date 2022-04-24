@@ -6,13 +6,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace ImageThumbnailCreator.Core.Tests
+namespace ImageThumbnailCreator.Core.Tests.IntegrationTests
 {
-    [Collection("OriginalFile")]
+    [Collection("Compression")]
     /// <summary>
     /// Integration tests.
     /// </summary>
-    public class ThumbnailerOriginalFileIntegrationTests : IClassFixture<DirectoryFixture>
+    public class ThumbnailerDefaultCompressionIntegrationTests : IClassFixture<DirectoryFixture>
     {
         private static string _testImageFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"TestImages");
         private static string _thumbnailAndOriginalSaveFolder = Path.Combine(_testImageFolder, @"ProcessedImages");
@@ -20,16 +20,13 @@ namespace ImageThumbnailCreator.Core.Tests
         private Thumbnailer _thumbnailer = new Thumbnailer();
         private DirectoryFixture _fixture;
 
-        public ThumbnailerOriginalFileIntegrationTests(DirectoryFixture fixture)
+        public ThumbnailerDefaultCompressionIntegrationTests(DirectoryFixture fixture)
         {
             _fixture = fixture;
         }
 
         [Theory]
-        [InlineData(@"landscapeForewardFacing.jpg")]
-        [InlineData(@"landscapeRearFacing.jpg")]
-        [InlineData(@"portraitForewardFacing.jpg")]
-        [InlineData(@"portraitRearFacing.jpg")]
+        [Trait("Category", "Integration")]
         [InlineData(@"largeLandscape.jpg")]
         [InlineData(@"largePortrait.jpg")]
         [InlineData(@"largeSquare.jpg")]
@@ -45,24 +42,23 @@ namespace ImageThumbnailCreator.Core.Tests
         [InlineData(@"largeLandscape.png")]
         [InlineData(@"largePortrait.png")]
         [InlineData(@"largeSquare.png")]
-        public void SaveOriginalSavesSuccessfully(string fileName)
+        public void CreateThumbnailWithDefaultCompressionSavesSuccesfully(string fileName)
         {
             //setup
             _fixture.TearDownTestDirectory();
             _fixture.SetupTestDirectory();
-            
+
             string imageLocation = Path.Combine(_testImageFolder, fileName);
             IFormFile formFile = _fixture.ConvertFileToStream(imageLocation, _fixture.GetImageTypeEnum(fileName), fileName);
 
             //act
-            string originalFileSaveLocation =  _thumbnailer.SaveOriginalAsync(_thumbnailAndOriginalSaveFolder, formFile).Result;
+            string thumbnailSaveLocation = _thumbnailer.CreateAsync(100, _thumbnailAndOriginalSaveFolder, _thumbnailAndOriginalSaveFolder, formFile).Result;
             string[] images = Directory.GetFiles(_thumbnailAndOriginalSaveFolder);
 
             //assert
-            Assert.NotNull(originalFileSaveLocation);
-            Assert.Contains(fileName, originalFileSaveLocation);
-            Assert.True(images.Length == 1);
-            Assert.Single(images);
+            Assert.NotNull(thumbnailSaveLocation);
+            Assert.Contains(fileName, thumbnailSaveLocation);
+            Assert.True(images.Length == 2); // should be the original image and the compressed thumbnail version
 
             //tear down
             _fixture.TearDownTestDirectory();
