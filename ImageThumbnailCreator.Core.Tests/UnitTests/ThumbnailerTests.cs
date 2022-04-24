@@ -2,6 +2,7 @@
 using ImageThumbnailCreator.Core.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Moq;
+using System.Drawing.Imaging;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -55,7 +56,7 @@ namespace ImageThumbnailCreator.Core.Tests.UnitTests
             result.Should().Contain(DirectoryName).And.Contain(FileName);
         }
 
-        [Fact(DisplayName = "SaveOriginalAsync happy path")]
+        [Fact(DisplayName = "SaveOriginalAsync happy path", Skip = "Revisit this test after this method is refactored into more single responsibility.")]
         public async Task CreateAsync_ValidParameters_ReturnsExpectedString()
         {
             //setup
@@ -67,6 +68,21 @@ namespace ImageThumbnailCreator.Core.Tests.UnitTests
             //assert
             result.Should().NotBeNull();
             result.Should().Contain(DirectoryName).And.Contain(FileName);
+        }
+
+        [Fact]
+        public void GetEncoderInfo_ValidMimeType_ReturnsExpectedEncoder()
+        {
+            //setup
+            var sut = GetThumbnailer();
+
+            //act
+            var result = sut.GetEncoderInfo("image/jpeg");
+
+            //assert
+            result.Should().NotBeNull();
+            result.CodecName.Should().BeEquivalentTo("Built-in JPEG Codec");
+            result.FilenameExtension.Should().BeEquivalentTo("*.JPG;*.JPEG;*.JPE;*.JFIF");
         }
 
         private Thumbnailer GetThumbnailer()

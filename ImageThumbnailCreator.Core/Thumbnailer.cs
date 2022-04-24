@@ -8,8 +8,11 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+
+[assembly: InternalsVisibleTo("ImageThumbnailCreator.Core.Tests.UnitTests")]
 
 namespace ImageThumbnailCreator
 {
@@ -305,7 +308,7 @@ namespace ImageThumbnailCreator
         /// </summary>
         /// <param name="mimeType">String name for an <see cref="ImageCodecInfo.MimeType"/></param>
         /// <returns><see cref="ImageCodecInfo"/></returns>
-        private static ImageCodecInfo GetEncoderInfo(string mimeType)
+        public ImageCodecInfo GetEncoderInfo(string mimeType)
         {
             int j;
             ImageCodecInfo[] encoders;
