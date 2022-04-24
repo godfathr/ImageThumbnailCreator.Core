@@ -42,6 +42,6 @@ namespace ImageThumbnailCreator.Core.Interfaces
         /// <param name="imageWidth"></param>
         /// <param name="imageHeight"></param>
         /// <returns><see cref="Tuple"/>&lt;<see cref="float"/>, <see cref="float"/>&gt; Item1 = height, Item2 = width.</returns>
-        Tuple<float, float> SetDimensions(float width, ref float imageWidth, ref float imageHeight);
+        void SetDimensions(float width, ref float imageWidth, ref float imageHeight);
     }
 }

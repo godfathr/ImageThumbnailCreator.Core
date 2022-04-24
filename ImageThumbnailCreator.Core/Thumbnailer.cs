@@ -61,9 +61,13 @@ namespace ImageThumbnailCreator
                             //{
                             //    await formFile.CopyToAsync(stream);
                             //}
-                        }
 
-                        response = Path.Combine(imageFolder, fileName);
+                            response = Path.Combine(imageFolder, fileName);
+                        }
+                        else
+                        {
+                            throw new Exception("IFormFile length must be greater than zero.");
+                        }
                     }
                 }
 
@@ -95,10 +99,10 @@ namespace ImageThumbnailCreator
                 throw new Exception("Original file location is invalid or the original file failed to save.");
             }
 
-            Bitmap thumbnail;
 
             try
             {
+                Bitmap thumbnail;
                 //read the bytes
                 Bitmap srcImage = new Bitmap(originalFileLocation);
 
@@ -118,27 +122,23 @@ namespace ImageThumbnailCreator
 
                 RotateFlipType rotationFlipType = OrientUpright(propertyIdList, srcImage);
 
-                Tuple<float, float> dimensions = SetDimensions(width, ref imageWidth, ref imageHeight);
+                int widthDimension;
+                int heightDimension;
+                SetDimensions(width, ref imageWidth, ref imageHeight, out widthDimension, out heightDimension);
 
                 // TODO: update to use new FileInfo
                 string thumbnailFileName = originalFileLocation.Split('\\').Last().ToString();
-                var newWidth = (int)dimensions.Item2;
-                var newHeight = (int)dimensions.Item1;
+                var newWidth = widthDimension;
+                var newHeight = heightDimension;
                 thumbnail = new Bitmap(newWidth, newHeight);
-                var graphics = Graphics.FromImage(thumbnail);
 
-                graphics.SmoothingMode = SmoothingMode.AntiAlias;
-                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
-                graphics.CompositingQuality = CompositingQuality.HighQuality;
-                graphics.RotateTransform(0);
-                //graphics.CompositingQuality = CompositingQuality.HighSpeed;
+                var graphics = SetGraphicsOptions(thumbnail);
 
-                // Now calculate the X,Y position of the upper-left corner
-                // (one of these will always be zero)
-                int posX = Convert.ToInt32((imageWidth - (newWidth)) / 2);
-                int posY = Convert.ToInt32((imageHeight - (newHeight)) / 2);
+                int posX;
+                int posY;
+                CalculateOriginPosition(imageWidth, newWidth, imageHeight, newHeight, out posX, out posY);
 
+                //TODO: Refactor this to use the Rectangle constructor that uses Point and Size
                 graphics.DrawImage(srcImage,
                         new Rectangle(posX, posY, newWidth, newHeight),
                         new Rectangle(0, 0, srcImage.Width, srcImage.Height),
@@ -165,8 +165,34 @@ namespace ImageThumbnailCreator
             }
         }
 
+        //TODO: Add unit tests
+        //TODO: Add method summary
+        private void CalculateOriginPosition(float imageWidth, int newWidth, float imageHeight, int newHeight, out int posX, out int posY)
+        {
+            // Now calculate the X,Y position of the upper-left corner
+            // (one of these will always be zero)
+            posX = Convert.ToInt32((imageWidth - (newWidth)) / 2);
+            posY = Convert.ToInt32((imageHeight - (newHeight)) / 2);
+        }
+
+        //TODO: Add unit tests
+        //TODO: Add method summary
+        public Graphics SetGraphicsOptions(Bitmap thumbnail)
+        {
+            var graphics = Graphics.FromImage(thumbnail);
+
+            graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+            graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+            graphics.CompositingQuality = CompositingQuality.HighQuality;
+            graphics.RotateTransform(0);
+            //graphics.CompositingQuality = CompositingQuality.HighSpeed;
+
+            return graphics;
+        }
+
         /// <inheritdoc/>
-        public Tuple<float, float> SetDimensions(float width, ref float imageWidth, ref float imageHeight)
+        public void SetDimensions(float width, ref float imageWidth, ref float imageHeight, out int widthDimension, out int heightDimension)
         {
             if (width < 1) throw new ArgumentException($"The width parameter must be greater than 0.");
 
@@ -176,22 +202,20 @@ namespace ImageThumbnailCreator
                 if (imageWidth > imageHeight)
                 {
                     //landscape images
-                    imageHeight = imageHeight * ((width / imageWidth));
-                    imageWidth = width;
+                    heightDimension = (int)(imageHeight * ((width / imageWidth)));
+                    widthDimension = (int)width;
                 }
                 else if (imageWidth < imageHeight)
                 {
                     //portrait images
-                    imageHeight = imageHeight * ((width / imageWidth));
-                    imageWidth = width;
+                    heightDimension = imageHeight * ((width / imageWidth));
+                    widthDimension = (int)width;
                 }
                 else
                 {
-                    imageHeight = width;
-                    imageWidth = width;
+                    heightDimension = (int)width;
+                    widthDimension = (int)width;
                 }
-
-                return new Tuple<float, float>(imageHeight, imageWidth);
             }
             catch (Exception ex)
             {
