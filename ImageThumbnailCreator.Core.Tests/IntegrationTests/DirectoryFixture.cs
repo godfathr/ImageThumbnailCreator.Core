@@ -4,7 +4,7 @@ using System;
 using System.IO;
 using System.Linq;
 
-namespace ImageThumbnailCreator.Core.Tests
+namespace ImageThumbnailCreator.Core.Tests.IntegrationTests
 {
     public class DirectoryFixture : IDisposable
     {

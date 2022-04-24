@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace ImageThumbnailCreator.Core.Tests
+namespace ImageThumbnailCreator.Core.Tests.IntegrationTests
 {
     [Collection("Directory")]
     /// <summary>
@@ -26,6 +26,7 @@ namespace ImageThumbnailCreator.Core.Tests
         }
 
         [Fact]
+        [Trait("Category", "Integration")]
         public void CreateNewThumbnailDirectoryCreatesDirectorySuccessfully()
         {
             // reset and setup test
