@@ -1,5 +1,7 @@
 # Image Thumbnail Creator .NET Standard 2.0
 
+[![.NET](https://github.com/godfathr/ImageThumbnailCreator.Core/actions/workflows/dotnet.yml/badge.svg)](https://github.com/godfathr/ImageThumbnailCreator.Core/actions/workflows/dotnet.yml)
+
 ## Short description
 - Create simple thumbnails from images
 - Save the original with the thumbnail version for easy links to full resolution version
