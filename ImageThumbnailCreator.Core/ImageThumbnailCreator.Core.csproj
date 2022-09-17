@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>1.1.3</Version>
-    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/godfathr/ImageThumbnailCreator.Core/projects/1</PackageProjectUrl>
     <PackageIcon>ImageThumbnailCreatorIconNS2.jpg</PackageIcon>
     <PackageIconUrl></PackageIconUrl>
@@ -35,7 +35,7 @@ Updated example project so no empty file is created by the Razor Page upload for
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\ImageThumbnailCreator\LICENSE.txt">
+    <None Include="..\LICENSE">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
